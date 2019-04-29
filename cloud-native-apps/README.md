@@ -37,7 +37,7 @@
 
 ```bash
 # Create dirs
-mkdir -p tmp/dev/demos/quarkus/getting-started && \
+mkdir -p /tmp/dev/demos/quarkus/getting-started && \
 cd /tmp/dev/demos/quarkus/getting-started
 
 # Create app
