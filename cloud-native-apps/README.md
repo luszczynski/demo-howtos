@@ -209,9 +209,14 @@ JAVA_DEMO_PID=$(ps aux | grep getting-started | awk '{ print $2}' | head -1)
 ```
 
 Now check how much resource is been used by this java process:
-
+Linux:
 ```bash
 ps -o pid,rss,cmd -p $JAVA_DEMO_PID
+```
+
+Mac:
+```bash
+ps -x -o rss,vsz,command | grep $JAVA_DEMO_PID | awk '{$2=int($2/1024)"M";}{ print;}'
 ```
 
 #### Docker container
