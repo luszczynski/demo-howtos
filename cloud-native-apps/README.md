@@ -208,7 +208,8 @@ Get java PID:
 JAVA_DEMO_PID=$(ps aux | grep getting-started | awk '{ print $2}' | head -1)
 ```
 
-Now check how much resource is been used by this java process:
+Now check how much resource is been used by this java process:  
+
 Linux:
 ```bash
 ps -o pid,rss,cmd -p $JAVA_DEMO_PID
