@@ -210,10 +210,18 @@ Get java PID:
 JAVA_DEMO_PID=$(ps aux | grep getting-started | awk '{ print $2}' | head -1)
 ```
 
-Now check how much resource is been used by this java process:
+Now check how much resource is been used by this java process:  
+
+Linux:
 
 ```bash
 ps -o pid,rss,cmd -p $JAVA_DEMO_PID
+```
+
+Mac:
+
+```bash
+ps -x -o rss,vsz,command | grep $JAVA_DEMO_PID | awk '{$2=int($2/1024)"M";}{ print;}'
 ```
 
 #### Docker container (OPTIONAL)
@@ -338,4 +346,6 @@ oc new-project quarkus-demo
 oc new-app quay.io/quarkus/centos-quarkus-native-s2i~{YOUR-QUARKUS-CODE-REPO-URL} \
     --name=quarkus-app \
     -n quarkus-demo
+
+oc expose svc/quarkus-native-demo
 ```
