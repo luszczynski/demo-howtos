@@ -23,8 +23,8 @@
 * Docker engine ou Podman
 * [GraalVM](https://www.graalvm.org/)
   * You need to set `GRAALVM_HOME` before executing this demo
-* Package zlib-devel
-  * sudo dnf install zlib-devel
+* Packages zlib-devel, gcc and glibc-devel
+  * sudo dnf install sudo dnf install gcc glibc-devel zlib-devel
 * If running this demo in a local VM, install Nexus (with persistence) to avoid 3G/4G usage during the demo
 
 > Try to run this demo at least once so maven can save all dependencies necessary in its local repository or in Nexus.
@@ -42,6 +42,9 @@
 mkdir -p /tmp/dev/demos/quarkus/getting-started && \
 cd /tmp/dev/demos/quarkus/getting-started
 
+# Check if you are in the correct path
+pwd
+
 # Create app
 mvn io.quarkus:quarkus-maven-plugin:0.14.0:create \
     -DprojectGroupId=org.acme \
@@ -54,6 +57,8 @@ mvn io.quarkus:quarkus-maven-plugin:0.14.0:create \
 code .
 ```
 
+Now show the file structure generate from the maven command.
+
 ### 1.2) Start your app in dev mode (live reload!!!)
 
 Open your favorite terminal or use VSCode integrated terminal (``Ctrl + ` `` in VSCode) and execute:
@@ -61,6 +66,8 @@ Open your favorite terminal or use VSCode integrated terminal (``Ctrl + ` `` in 
 ```bash
 ./mvnw clean compile quarkus:dev
 ```
+
+> Show the time necessary to start quarkus
 
 Open your browser at [http://localhost:8080/hello](http://localhost:8080/hello)
 
@@ -70,9 +77,13 @@ Change the value returned from hello method to show hot reload:
   @GET
   @Produces(MediaType.TEXT_PLAIN)
   public String hello() {
-      return "hello customer";
+      return "hello <customer>";
   }
 ```
+
+> Replace 'hello \<customer\>' using the name of your customer. For example, 'hello nasa'.
+
+Now, go back to your browser and update hello enpoint page to show the hot reload.
 
 Create a new endpoint:
 
@@ -138,6 +149,10 @@ public class GreetingResource {
 
 Update `GreetingResourceTest` so it can pass in the test. To open, in VSCode, press `Crtl + p` and then write `GreetingResourceTest`
 
+First, execute the test to show it won't pass. Click on `Run Test`
+
+> It may be necessary to modified the file and save it before running the test. It seems to be a bug in this release.
+
 Now update it as follow:
 
 ```java
@@ -147,7 +162,7 @@ Now update it as follow:
           .when().get("/hello")
           .then()
              .statusCode(200)
-             .body(is("hello customer"));
+             .body(is("hello <customer>"));
     }
 ```
 
@@ -215,7 +230,7 @@ Now check how much resource is been used by this java process:
 Linux:
 
 ```bash
-ps -o pid,rss,cmd -p $JAVA_DEMO_PID
+ps -o pid,rss,cmd -p $JAVA_DEMO_PID | awk 'NR>1 {$2=int($2/1024)"M";}{ print;}'
 ```
 
 Mac:
@@ -263,7 +278,6 @@ git add . --all
 git commit -m "first commit"
 git remote add origin https://github.com/<user>/quarkus-demo.git
 git push -u origin master
-
 ```
 
 Java OpenJDK 8 Image Builder
@@ -283,7 +297,17 @@ strategy:
 ### 1.7) Native packaging
 
 ```bash
+# Choose only one option below:
+
+# 1) Build using docker
 ./mvnw package -Pnative -DskipTests -Dnative-image.container-runtime=docker
+
+# 2) Build using podman
+./mvnw package -Pnative -DskipTests -Dnative-image.container-runtime=podman
+
+# 3) Build using local graalvm
+./mvnw package -Pnative -DskipTests
+
 ls -lah target/
 file target/getting-started-1.0-SNAPSHOT-runner
 ./target/getting-started-1.0-SNAPSHOT-runner
@@ -299,11 +323,19 @@ JAVA_DEMO_PID=$(ps aux | grep getting-started | awk '{ print $2}' | head -1)
 
 Now check how much resource is been used by this java process:
 
+Linux:
+
 ```bash
-ps -o pid,rss,cmd -p $JAVA_DEMO_PID
+ps -o pid,rss,cmd -p $JAVA_DEMO_PID | awk 'NR>1 {$2=int($2/1024)"M";}{ print;}'
 ```
 
-#### Native Docker container
+Mac:
+
+```bash
+ps -x -o rss,vsz,command | grep $JAVA_DEMO_PID | awk '{$2=int($2/1024)"M";}{ print;}'
+```
+
+#### Native Docker container (Optional)
 
 Now let's create our container image:
 
@@ -315,7 +347,7 @@ docker run -i --rm -p 8080:8080 quarkus/getting-started
 docker stats
 ```
 
-#### Native build on Openshift/Kubernetes
+#### Native build on Openshift/Kubernetes (Optional)
 
 ##### Binary Build
 
