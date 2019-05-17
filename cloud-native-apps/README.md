@@ -46,7 +46,7 @@ cd /tmp/dev/demos/quarkus/getting-started
 pwd
 
 # Create app
-mvn io.quarkus:quarkus-maven-plugin:0.14.0:create \
+mvn io.quarkus:quarkus-maven-plugin:0.15.0:create \
     -DprojectGroupId=org.acme \
     -DprojectArtifactId=getting-started \
     -DclassName="org.acme.quickstart.GreetingResource" \
@@ -144,6 +144,10 @@ public class GreetingResource {
     }
 }
 ```
+
+### 1.4) Simulating an error
+
+
 
 ### 1.4) Integration Testing
 
@@ -310,6 +314,8 @@ strategy:
 
 ls -lah target/
 file target/getting-started-1.0-SNAPSHOT-runner
+
+# Run using native binary
 ./target/getting-started-1.0-SNAPSHOT-runner
 ```
 
